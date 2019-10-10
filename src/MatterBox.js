@@ -52,15 +52,18 @@ export default class MatterBox {
   }
 
   play() {
-    this.render.run();
+    Runner.run(this.engine);
+    Render.run(this.render);
   }
 
   stop() {
-    this.render.stop();
+    Runner.stop(this.runner);
+    Render.stop(this.render);
   }
 
   kill() {
     this.render.canvas.remove();
+    this._removeResizeEventListener();
   }
 
   _preventDomTargetTouchMove() {
@@ -69,17 +72,19 @@ export default class MatterBox {
     };
   }
 
+  _resizeHandler = () => {
+    if (window.innerWidth != this.cacheDomTargetWidth) {
+      this.kill();
+      this._initMatter();
+    }
+  };
+
   _addResizeEventListener() {
-    window.addEventListener(
-      "resize",
-      () => {
-        if (window.innerWidth != this.cacheDomTargetWidth) {
-          this.kill();
-          this._initMatter();
-        }
-      },
-      false
-    );
+    window.addEventListener("resize", this._resizeHandler, false);
+  }
+
+  _removeResizeEventListener() {
+    window.removeEventListener("resize", this._resizeHandler, false);
   }
 
   async _initMatter() {
@@ -213,10 +218,12 @@ export default class MatterBox {
     const y1 = this.domTarget.clientHeight;
 
     return Composites.stack(
-      0,
+      (imgWidth * this.sprite.xScale) / 2,
       -y1,
-      x1 / imgWidth + 1,
-      (y1 * this.boxFillPercentage) / imgHeight + 1,
+      Math.ceil(x1 / (imgWidth * this.sprite.xScale)),
+      Math.ceil(
+        (y1 * this.boxFillPercentage) / (imgHeight * this.sprite.yScale)
+      ) + 1,
       0,
       -imgHeight / 2,
       function(x, y) {

@@ -1,6 +1,6 @@
-import MatterBox from "./index";
+import MatterBox from "./index.js";
 
-new MatterBox("#app", {
+const mb = new MatterBox("#app", {
   textureFilePath:
     "https://one-forty.org/wp-content/themes/one-forty/assets/images/2019/book.png",
   textureScale: 0.8,
@@ -11,3 +11,13 @@ new MatterBox("#app", {
   isDevMode: false,
   isTextureHidden: false,
 });
+
+// mb.stop();
+
+// setTimeout(() => {
+//   mb.play();
+// }, 5000);
+
+setTimeout(() => {
+  mb.kill();
+}, 5000);
