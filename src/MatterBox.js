@@ -43,15 +43,14 @@ export default class MatterBox {
     this.isDevMode = isDevMode;
     this.isTextureHidden = isTextureHidden;
     this.canvasBackgroundColor = canvasBackgroundColor;
+    this.boxFillPercentage = boxFillPercentage;
     this.sprite = {
       texture: textureFilePath,
       xScale: textureScale,
       yScale: textureScale,
     };
-    this.boxFillPercentage = boxFillPercentage;
-    this._initMatter();
 
-    this._addResizeEventListener();
+    this._initMatter();
   }
 
   play() {
@@ -99,9 +98,10 @@ export default class MatterBox {
     this.stack = stack;
     const wallList = this._getWallList();
     const mouseControl = this._getMouseControl();
-    // const mouseBody = this._getMouseBody();
+
     this._fitRenderViewportToScene();
     World.add(this.engine.world, [stack, ...wallList, mouseControl]);
+    this._addResizeEventListener();
   }
 
   _fitRenderViewportToScene() {
@@ -111,14 +111,6 @@ export default class MatterBox {
       max: { x: clientWidth, y: clientHeight },
     });
   }
-
-  // _getMouseBody() {
-  //   const mouseBody = Bodies.rectangle(0, 0, 50, 50, {
-  //     friction: 1,
-  //   });
-  //   this.mouseBody = mouseBody;
-  //   return mouseBody;
-  // }
 
   _getMouseControl() {
     // keep the mouse in sync with rendering
