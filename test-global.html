@@ -1,0 +1,28 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Document</title>
+  <script src="./dist/globalMatterBox.js"></script>
+</head>
+
+<body>
+  <div id="app" style="width: 100vw; height:100vh"></div>
+  <script type="text/javascript">
+    new MatterBox("#app", {
+      textureFilePath:
+        "https://one-forty.org/wp-content/themes/one-forty/assets/images/2019/book.png",
+      textureScale: 0.8,
+      boxFillPercentage: 1,
+      enableMouseWheel: true,
+      hoverVelocityScale: 1.7,
+      mode: "dev",
+      isDevMode: false,
+      isTextureHidden: false,
+    })
+  </script>
+</body>
+
+</html>;
