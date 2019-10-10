@@ -16,11 +16,12 @@ import getPromiseImageSize from "./getPromiseImageSize";
 const defaultOptions = {
   textureFilePath: undefined,
   textureScale: 1,
-  boxFillPercentage: 0.6,
+  boxFillPercentage: 1,
   enableMouseWheel: true,
   hoverVelocityScale: 1.8,
   isDevMode: false,
-  textureHidden: false,
+  isTextureHidden: false,
+  canvasBackgroundColor: "transparent",
 };
 
 export default class MatterBox {
@@ -33,13 +34,15 @@ export default class MatterBox {
       hoverVelocityScale,
       isDevMode,
       isTextureHidden,
+      canvasBackgroundColor,
     } = Object.assign({}, defaultOptions, options);
 
     this.domTarget = document.querySelector(domTarget) || document.body;
     this.enableMouseWheel = enableMouseWheel;
     this.hoverVelocityScale = hoverVelocityScale;
     this.isDevMode = isDevMode;
-    this.isTextureHidden = isDevMode;
+    this.isTextureHidden = isTextureHidden;
+    this.canvasBackgroundColor = canvasBackgroundColor;
     this.sprite = {
       texture: textureFilePath,
       xScale: textureScale,
@@ -190,6 +193,7 @@ export default class MatterBox {
         showAngleIndicator: this.isDevMode,
         showVelocity: this.isDevMode,
         wireframes: this.isTextureHidden,
+        background: this.canvasBackgroundColor,
       },
     });
     Render.run(this.render);
