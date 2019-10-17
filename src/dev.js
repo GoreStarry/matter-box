@@ -18,6 +18,10 @@ const mb = new MatterBox("#app", {
   isDevMode: false, // 開啟物件方向、速度等輔助線
   isTextureHidden: false, // 隱藏物件貼圖
   canvasBackgroundColor: "transparent", // canvas 背景色
+  angular: {
+    maxInitialAngular: 10, // Number: 0~360 (deg)
+    maxInitialAngularVelocity: 60, // Number: 0~360 (deg)
+  },
 });
 
 // 預設直接播放，如果想先初始化但不執行就先：

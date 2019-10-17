@@ -22,6 +22,10 @@ const defaultOptions = {
   isDevMode: false,
   isTextureHidden: false,
   canvasBackgroundColor: "transparent",
+  angular: {
+    maxInitialAngular: 0, // 0~360
+    maxInitialAngularVelocity: 0, // 0~360
+  },
 };
 
 export default class MatterBox {
@@ -35,6 +39,7 @@ export default class MatterBox {
       isDevMode,
       isTextureHidden,
       canvasBackgroundColor,
+      angular,
     } = Object.assign({}, defaultOptions, options);
 
     this.domTarget = document.querySelector(domTarget) || document.body;
@@ -44,6 +49,7 @@ export default class MatterBox {
     this.isTextureHidden = isTextureHidden;
     this.canvasBackgroundColor = canvasBackgroundColor;
     this.boxFillPercentage = boxFillPercentage;
+    this.angular = angular;
     this.sprite = {
       texture: textureFilePath,
       xScale: textureScale,
@@ -101,7 +107,21 @@ export default class MatterBox {
 
     this._fitRenderViewportToScene();
     World.add(this.engine.world, [stack, ...wallList, mouseControl]);
+    this._setStackRandomInitAngularVelocity();
+
     this._addResizeEventListener();
+  }
+
+  _setStackRandomInitAngularVelocity() {
+    this.stack.bodies.forEach(body => {
+      Body.setAngularVelocity(
+        body,
+        Common.random(
+          0,
+          (this.angular.maxInitialAngularVelocity / 180) * Math.PI
+        )
+      );
+    });
   }
 
   _fitRenderViewportToScene() {
@@ -212,7 +232,7 @@ export default class MatterBox {
 
     const x1 = this.domTarget.clientWidth;
     const y1 = this.domTarget.clientHeight;
-    console.log(Math.ceil(x1 / (imgWidth * this.sprite.xScale)));
+
     const imageSize =
       (imgWidth > imgHeight ? imgHeight : imgWidth) * this.sprite.xScale;
     const imgWidthScaleX = imgWidth * this.sprite.xScale;
@@ -226,7 +246,7 @@ export default class MatterBox {
       ) + 1,
       (x1 - colNumImage * imgWidthScaleX * 0.5) / colNumImage,
       -imgHeight / 2,
-      function(x, y) {
+      (x, y) => {
         // 獲取隨機多邊
         let sides = Math.round(Common.random(1, 8));
 
@@ -243,6 +263,10 @@ export default class MatterBox {
 
         const randomBodySizeSmall = imageSize / 3;
         const randomBodySizeLarge = imageSize * 0.9;
+        const randomInitAngular = Common.random(
+          0,
+          (this.angular.maxInitialAngular / 180) * Math.PI
+        );
         switch (Math.round(Common.random(0, 1))) {
           case 0:
             return Bodies.rectangle(
@@ -250,7 +274,11 @@ export default class MatterBox {
               y,
               Common.random(randomBodySizeSmall, randomBodySizeLarge),
               Common.random(randomBodySizeSmall, randomBodySizeLarge),
-              { chamfer: chamfer, ...optionRender }
+              {
+                chamfer: chamfer,
+                ...optionRender,
+                angle: randomInitAngular,
+              }
             );
           case 1:
             return Bodies.polygon(
@@ -261,6 +289,7 @@ export default class MatterBox {
               {
                 chamfer: chamfer,
                 ...optionRender,
+                angle: randomInitAngular,
               }
             );
         }
