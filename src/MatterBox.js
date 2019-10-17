@@ -212,15 +212,19 @@ export default class MatterBox {
 
     const x1 = this.domTarget.clientWidth;
     const y1 = this.domTarget.clientHeight;
-
+    console.log(Math.ceil(x1 / (imgWidth * this.sprite.xScale)));
+    const imageSize =
+      (imgWidth > imgHeight ? imgHeight : imgWidth) * this.sprite.xScale;
+    const imgWidthScaleX = imgWidth * this.sprite.xScale;
+    const colNumImage = Math.ceil(x1 / imgWidthScaleX);
     return Composites.stack(
-      (imgWidth * this.sprite.xScale) / 2,
+      imgWidthScaleX / 3,
       -y1,
-      Math.ceil(x1 / (imgWidth * this.sprite.xScale)),
+      colNumImage + 1,
       Math.ceil(
         (y1 * this.boxFillPercentage) / (imgHeight * this.sprite.yScale)
       ) + 1,
-      0,
+      (x1 - colNumImage * imgWidthScaleX * 0.5) / colNumImage,
       -imgHeight / 2,
       function(x, y) {
         // 獲取隨機多邊
@@ -237,7 +241,6 @@ export default class MatterBox {
           };
         }
 
-        const imageSize = imgWidth > imgHeight ? imgHeight : imgWidth;
         const randomBodySizeSmall = imageSize / 3;
         const randomBodySizeLarge = imageSize * 0.9;
         switch (Math.round(Common.random(0, 1))) {

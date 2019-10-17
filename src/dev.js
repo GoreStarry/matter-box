@@ -11,10 +11,10 @@ const mb = new MatterBox("#app", {
   // 圖片位置
   textureFilePath:
     "https://one-forty.org/wp-content/themes/one-forty/assets/images/2019/book.png",
-  textureScale: 0.8, // 原圖縮放比例
-  boxFillPercentage: 1, // 初始化 stack 的時候放滿多少（掉落後會重疊，所以掉落後會更少）
+  textureScale: 2, // 原圖縮放比例
+  boxFillPercentage: 0.5, // 初始化 stack 的時候放滿多少（掉落後會重疊，所以掉落後會更少）
   enableMouseWheel: true, // 給不給電腦滑鼠滾輪或觸控板，於canvas區塊內滑動
-  hoverVelocityScale: 1.7, // 滑鼠滑過物件的時候推動的加速度比率
+  hoverVelocityScale: 1.5, // 滑鼠滑過物件的時候推動的加速度比率
   isDevMode: false, // 開啟物件方向、速度等輔助線
   isTextureHidden: false, // 隱藏物件貼圖
   canvasBackgroundColor: "transparent", // canvas 背景色
