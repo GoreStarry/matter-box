@@ -48,16 +48,20 @@ export default class MatterBox {
     this.isDevMode = isDevMode;
     this.isTextureHidden = isTextureHidden;
     this.canvasBackgroundColor = canvasBackgroundColor;
-    this.boxFillPercentage = boxFillPercentage;
+    this.boxFillPercentageList = [boxFillPercentage];
     this.angular = angular;
-    this.sprite = {
-      texture: textureFilePath,
-      xScale: textureScale,
-      yScale: textureScale,
-    };
+    this.spriteList = [
+      this._transformSpriteSettings(textureFilePath, textureScale),
+    ];
 
     this._initMatter();
   }
+
+  _transformSpriteSettings = (textureFilePath, textureScale) => ({
+    texture: textureFilePath,
+    xScale: textureScale,
+    yScale: textureScale,
+  });
 
   play() {
     Runner.run(this.engine);
@@ -71,7 +75,24 @@ export default class MatterBox {
 
   kill() {
     this.render.canvas.remove();
+    this.stackList.length = 1;
+    this.spriteList.length = 1;
     this._removeResizeEventListener();
+  }
+
+  async add({ textureFilePath, textureScale, boxFillPercentage }) {
+    this._addSprite(
+      this._transformSpriteSettings(textureFilePath, textureScale)
+    );
+    this.boxFillPercentageList = [
+      ...this.boxFillPercentageList,
+      boxFillPercentage,
+    ];
+    const stack = await this._getStack(this.spriteList.length - 1);
+    this.stackList.push(stack);
+    const mouseControl = this._getMouseControl();
+    World.add(this.engine.world, [stack, mouseControl]);
+    this._setStackRandomInitAngularVelocity(this.spriteList.length - 1);
   }
 
   _preventDomTargetTouchMove() {
@@ -101,7 +122,7 @@ export default class MatterBox {
     this._createRunner();
     this.cacheDomTargetWidth = this.domTarget.clientWidth;
     const stack = await this._getStack();
-    this.stack = stack;
+    this.stackList = [stack];
     const wallList = this._getWallList();
     const mouseControl = this._getMouseControl();
 
@@ -112,8 +133,12 @@ export default class MatterBox {
     this._addResizeEventListener();
   }
 
-  _setStackRandomInitAngularVelocity() {
-    this.stack.bodies.forEach(body => {
+  _addSprite(sprite) {
+    this.spriteList.push(sprite);
+  }
+
+  _setStackRandomInitAngularVelocity(stackIndex = 0) {
+    this.stackList[stackIndex].bodies.forEach(body => {
       Body.setAngularVelocity(
         body,
         Common.random(
@@ -133,6 +158,7 @@ export default class MatterBox {
   }
 
   _getMouseControl() {
+    this.mouseConstraint && Events.off(this.mouseConstraint);
     // keep the mouse in sync with rendering
     const mouse = Mouse.create(this.render.canvas);
 
@@ -155,7 +181,12 @@ export default class MatterBox {
     this.prevMousePosition = {};
 
     Events.on(mouseConstraint, "mousemove", ({ mouse: { position } }) => {
-      var [body] = Matter.Query.point(this.stack.bodies, position);
+      var [body] = Matter.Query.point(
+        this.stackList.reduce((prev, current, index) => {
+          return [...prev, ...current.bodies];
+        }, []),
+        position
+      );
       const { x, y } = position;
       if (body) {
         const { x: PrevX, y: PrevY } = this.prevMousePosition;
@@ -166,7 +197,7 @@ export default class MatterBox {
       }
       this.prevMousePosition = { x, y };
     });
-
+    this.mouseConstraint = mouseConstraint;
     return mouseConstraint;
   }
 
@@ -216,15 +247,16 @@ export default class MatterBox {
     Runner.run(this.runner, this.engine);
   }
 
-  _getStack = async () => {
+  _getStack = async (spriteIndex = 0) => {
+    const sprite = this.spriteList[spriteIndex];
     const { width: imgWidth, height: imgHeight } = await getPromiseImageSize(
-      this.sprite.texture
+      sprite.texture
     );
 
     const optionRender = {
       // mass: 10,
       render: {
-        sprite: this.sprite,
+        sprite,
       },
       frictionAir: 0.03,
       // restitution: 1,
@@ -234,15 +266,16 @@ export default class MatterBox {
     const y1 = this.domTarget.clientHeight;
 
     const imageSize =
-      (imgWidth > imgHeight ? imgHeight : imgWidth) * this.sprite.xScale;
-    const imgWidthScaleX = imgWidth * this.sprite.xScale;
+      (imgWidth > imgHeight ? imgHeight : imgWidth) * sprite.xScale;
+    const imgWidthScaleX = imgWidth * sprite.xScale;
     const colNumImage = Math.ceil(x1 / imgWidthScaleX);
     return Composites.stack(
       imgWidthScaleX / 3,
-      -imgHeight * this.sprite.yScale,
+      -imgHeight * sprite.yScale,
       colNumImage + 1,
       Math.ceil(
-        (y1 * this.boxFillPercentage) / (imgHeight * this.sprite.yScale)
+        (y1 * this.boxFillPercentageList[spriteIndex]) /
+          (imgHeight * sprite.yScale)
       ) + 1,
       (x1 - colNumImage * imgWidthScaleX * 0.5) / colNumImage,
       -imgHeight / 2,

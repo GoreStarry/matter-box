@@ -30,9 +30,19 @@ const mb = new MatterBox("#app", {
 // 時候到再 play
 // setTimeout(() => {
 //   mb.play();
-// }, 5000);
+// }, 3000);
 
 // 沒用的時候有 kill 方法
 // setTimeout(() => {
 //   mb.kill();
 // }, 10000);
+
+// 臨時追加 stack
+// setTimeout(() => {
+//   mb.add({
+//     textureFilePath:
+//       "https://one-forty.org/wp-content/themes/one-forty/assets/images/2019/book.png",
+//     textureScale: 1,
+//     boxFillPercentage: 1,
+//   });
+// }, 5000);
