@@ -239,7 +239,7 @@ export default class MatterBox {
     const colNumImage = Math.ceil(x1 / imgWidthScaleX);
     return Composites.stack(
       imgWidthScaleX / 3,
-      -y1,
+      -imgHeight * this.sprite.yScale,
       colNumImage + 1,
       Math.ceil(
         (y1 * this.boxFillPercentage) / (imgHeight * this.sprite.yScale)
