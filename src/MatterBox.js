@@ -96,7 +96,7 @@ export default class MatterBox {
   }
 
   _preventDomTargetTouchMove() {
-    this.domTarget.ontouchend = e => {
+    this.domTarget.ontouchend = (e) => {
       e.preventDefault();
     };
   }
@@ -138,7 +138,7 @@ export default class MatterBox {
   }
 
   _setStackRandomInitAngularVelocity(stackIndex = 0) {
-    this.stackList[stackIndex].bodies.forEach(body => {
+    this.stackList[stackIndex].bodies.forEach((body) => {
       Body.setAngularVelocity(
         body,
         Common.random(
@@ -264,10 +264,11 @@ export default class MatterBox {
 
     const x1 = this.domTarget.clientWidth;
     const y1 = this.domTarget.clientHeight;
-
+    console.log(imgWidth, imgHeight);
     const imageSize =
       (imgWidth > imgHeight ? imgHeight : imgWidth) * sprite.xScale;
-    const imgWidthScaleX = imgWidth * sprite.xScale;
+    const imgWidthScaleX =
+      (imgWidth > imgHeight ? imgHeight : imgWidth) * sprite.xScale;
     const colNumImage = Math.ceil(x1 / imgWidthScaleX);
     return Composites.stack(
       imgWidthScaleX / 3,
